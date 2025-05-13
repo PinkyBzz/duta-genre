@@ -1,0 +1,300 @@
+:root {
+    --blink-color: #ffffff; /* Default blink color */
+}
+
+@keyframes bodyAnimation {
+    0% { background-color: #e0f7fa; }
+    50% { background-color: var(--blink-color); }
+    100% { background-color: #e0f7fa; }
+}
+
+body {
+    animation: bodyAnimation 3s ease-in-out infinite; 
+}
+
+.bg-change {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.bg-change input[type="color"] {
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.container {
+    background: linear-gradient(135deg, #fff, #ffccbc);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.5s ease;
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+.container:hover {
+    transform: scale(1.05);
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 700;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    animation: headerBounce 1s ease-in-out infinite;
+}
+
+@keyframes headerBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    color: #555;
+    font-weight: 600;
+}
+
+.emoji-options {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    animation: emojiBounce 1s ease-in-out infinite;
+}
+
+@keyframes emojiBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.emoji {
+    font-size: 3.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, filter 0.3s ease, transform 0.5s ease-in-out;
+    animation: emojiScale 1s infinite alternate;
+}
+
+@keyframes emojiScale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.emoji:hover {
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+}
+
+.result {
+    margin-top: 30px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.result span {
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.good {
+    background-color: #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}
+
+.neutral {
+    background-color: #FFC107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+}
+
+.bad {
+    background-color: #F44336;
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
+}
+
+.time-input {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.time-input input,
+.time-input button {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: #b4b1b1;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-input input {
+    width: 150px;
+}
+
+.time-input button {
+    background: #6200ea;
+}
+
+.time-input button:hover {
+    background: #3700b3;
+    transform: translateY(-3px);
+}
+
+.calendar-input {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.calendar-input input {
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    border: 2px solid #ddd;
+    background-color: #ffffff;
+}
+
+.color-picker {
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease, box-shadow 0.3s;
+}
+
+.color-picker:hover {
+    transform: scale(1.4);
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.color-picker.green { background-color: #4CAF50; }
+.color-picker.yellow { background-color: #FFC107; }
+.color-picker.red { background-color: #F44336; }
+
+.text-area {
+    margin: 20px 0;
+    width: 90%;
+    max-width: 480px;
+    padding: 15px;
+    font-size: 1.2rem;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    resize: vertical;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.text-area:focus {
+    outline: none;
+    border-color: #6200ea;
+    box-shadow: 0 0 10px rgba(98, 0, 234, 0.6);
+}
+
+.notification {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #333;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce padding on mobile */
+    }
+
+    .container {
+        padding: 20px;
+        margin: 0;
+        border-radius: 10px;
+    }
+
+    h1 {
+        font-size: 2rem; /* Smaller font size for mobile */
+    }
+
+    p {
+        font-size: 1rem; /* Smaller font size for mobile */
+    }
+
+    .emoji-options {
+        gap: 15px;
+        margin: 15px 0;
+    }
+
+    .emoji {
+        font-size: 2.5rem; /* Smaller emoji size for mobile */
+    }
+
+    .time-input,
+    .calendar-input {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .time-input input,
+    .time-input button,
+    .calendar-input input {
+        width: 100%; /* Full width on mobile */
+        padding: 10px;
+        font-size: 1rem; /* Adjust font size */
+    }
+
+    .text-area {
+        width: 100%; /* Full width on mobile */
+        padding: 10px;
+        font-size: 1rem; /* Adjust font size */
+    }
+
+    .notification {
+        bottom: 10px;
+        right: 10px;
+        padding: 8px 16px;
+        font-size: 0.9rem; /* Adjust font size */
+    }
+
+    .color-picker {
+        font-size: 1.5rem; /* Adjust color picker size */
+        padding: 10px;
+    }
+}

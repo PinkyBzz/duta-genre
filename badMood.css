@@ -1,0 +1,92 @@
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #070F2B, #1B1A55); /* Gradient background */
+    color: #ffffff; /* Light text color for contrast */
+    text-align: center; /* Center all text */
+    padding: 20px;
+    margin: 0; /* Remove default margin */
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+h1 {
+    font-size: 3rem; /* Larger font size for emphasis */
+    margin-bottom: 20px;
+    color: #ffffff; /* Bright red color for emphasis */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+}
+
+.message {
+    margin: 20px auto; /* Center and space out messages */
+    font-size: 1.5rem; /* Increased font size for better readability */
+    max-width: 600px; /* Limit width for better layout */
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 1.2rem; /* Increased font size */
+    background-color: #ffffff; /* Bright red button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s; /* Transition effects */
+    margin: 10px; /* Adjusted margin for spacing */
+    display: inline-block; /* Ensure buttons are inline */
+}
+
+.button:hover {
+    background-color: #c0392b; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.text-area {
+    width: 80%;
+    height: 100px;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #34495e; /* Darker background for text area */
+    color: white; /* White text for visibility */
+    transition: border-color 0.3s; /* Transition for border color */
+}
+
+.text-area:focus {
+    border-color: #e74c3c; /* Highlight border on focus */
+    outline: none; /* Remove default outline */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce padding on mobile */
+    }
+
+    h1 {
+        font-size: 2.5rem; /* Smaller font size for mobile */
+    }
+
+    .message {
+        font-size: 1.2rem; /* Smaller font size for mobile */
+    }
+
+    .button {
+        padding: 15px 30px; /* Increase button size for touch */
+        font-size: 1.5rem; /* Larger font size for better readability */
+    }
+
+    .text-area {
+        width: 100%; /* Full width on mobile */
+        font-size: 1rem; /* Adjust font size */
+    }
+}

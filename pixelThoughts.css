@@ -1,0 +1,120 @@
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #070F2B, #1B1A55);
+    text-align: center;
+    color: #333;
+    padding: 20px;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden; /* Prevent scrolling */
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.thought-input {
+    width: 180px; /* Increased width for larger circle */
+    height: 180px; /* Increased height for larger circle */
+    margin: 20px auto;
+    padding: 0; /* Remove padding for better fit */
+    border-radius: 50%; /* Make it circular */
+    border: 2px solid #ffffff;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s;
+    text-align: center; /* Center text horizontally */
+    line-height: 180px; /* Center text vertically */
+    overflow: hidden; /* Prevent text from scrolling */
+}
+
+.thought-input:focus {
+    border-color: #ffffff;
+}
+
+.button {
+    padding: 5px 15px; /* Reduced padding for smaller button */
+    font-size: 0.9rem; /* Reduced font size */
+    width: 100px; /* Set a specific width for the button */
+    background-color: #BE3144;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 10px; /* Adjusted margin for spacing */
+}
+
+.button:hover {
+    background-color: #872341; /* Darker color on hover */
+}
+
+.timer {
+    font-size: 1.5rem;
+    margin: 20px auto; /* Center the timer */
+    padding: 10px;
+    border: 2px solid #ffffff; /* Match the existing color */
+    border-radius: 8px;
+    background-color: #ffffff; /* Updated background color */
+    display: inline-block; /* Make it a block element */
+}
+
+.calming-response {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.fade-out {
+    transition: opacity 2s ease;
+    opacity: 0; /* Start with full opacity */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce padding on mobile */
+    }
+
+    h1 {
+        font-size: 2rem; /* Smaller font size for mobile */
+    }
+
+    .thought-input {
+        width: 100%; /* Full width on mobile */
+        height: auto; /* Adjust height for mobile */
+        font-size: 1rem; /* Adjust font size */
+    }
+
+    .button {
+        padding: 10px 20px; /* Increase button size for touch */
+        font-size: 1.2rem; /* Larger font size for better readability */
+        width: auto; /* Allow button to size based on content */
+    }
+
+    .timer {
+        font-size: 1.2rem; /* Adjust timer font size */
+    }
+
+    .calming-response {
+        font-size: 1rem; /* Adjust calming response font size */
+    }
+}
