@@ -5,85 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Thoughts</title>
     <link rel="stylesheet" href="pixelThoughts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <audio controls>
-        <source src="Crying Alone - Sad & Emotional Piano Song Instrumental.mp3" type="audio/mp3">
-    </audio>
-    <h1>Pixel Thoughts</h1>
-    <textarea class="thought-input" id="thoughtInput" placeholder="anything bad?"></textarea>
-    <br>
-    <div class="button-container">
-        <button class="button" id="submitThoughts">Submit Thoughts</button>
-        <button class="button" id="startTimer">Start Timer</button>
-        <button class="button" id="resetTimer">Reset Timer</button>
-    </div>
-    <div class="timer" id="timer">00:00</div>
-    <div id="thoughtsDisplay"></div>
-    <div class="calming-response" id="calmingResponse"></div>
-
-    <script>
-        const submitButton = document.getElementById('submitThoughts'); // Updated ID
-        const thoughtInput = document.getElementById('thoughtInput');
-        const thoughtsDisplay = document.getElementById('thoughtsDisplay');
-        const calmingResponse = document.getElementById('calmingResponse');
-        const timerDisplay = document.getElementById('timer');
-        const startButton = document.getElementById('startTimer');
-        const resetButton = document.getElementById('resetTimer');
-        const playAudioButton = document.getElementById('playAudio');
-        const backgroundAudio = document.getElementById('background-audio');
-
-        let timerInterval;
-        let seconds = 0;
-
-        const calmingMessages = [
-            "Take a deep breath and let it go.",
-            "You are not alone; it's okay to feel this way.",
-            "Focus on the present moment; everything will be alright.",
-            "Breathe in peace, breathe out tension.",
-            "You are stronger than you think.",
-            "This too shall pass.",
-            "You are loved and supported.",
-            "You are doing the best you can, and that's enough.",
-            "Take a moment to practice self-care.",
-            "You are not your thoughts; you are so much more.",
+    <div class="container">
+        <header>
+            <h1 class="main-title">Pixel Thoughts</h1>
+            <p class="subtitle">Release your thoughts into the digital universe</p>
+        </header>
         
-        ];
-
-        submitButton.addEventListener('click', () => {
-            const thought = thoughtInput.value;
-            if (thought) {
-                const thoughtElement = document.createElement('p');
-                thoughtElement.textContent = thought;
-                thoughtsDisplay.appendChild(thoughtElement);
-                thoughtInput.value = ''; // Clear input
-
-                // Display a calming response
-                const randomIndex = Math.floor(Math.random() * calmingMessages.length);
-                calmingResponse.textContent = calmingMessages[randomIndex];
-            }
-        });
-
-        startButton.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                seconds++;
-                const minutes = Math.floor(seconds / 60);
-                const displaySeconds = seconds % 60;
-                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
-            }, 1000);
-        });
-
-        resetButton.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            seconds = 0;
-            timerDisplay.textContent = '00:00';
-        });
-
-        playAudioButton.addEventListener('click', () => {
-            backgroundAudio.play();
-        });
-    </script>
-    <script src="pixelThoughts.js"></script>
+        <div class="audio-container">
+            <button class="audio-button" id="toggleAudio">
+                <i class="fas fa-play" id="audioIcon"></i>
+            </button>
+            <span class="audio-label">Background Music</span>
+            <audio id="backgroundAudio">
+                <source src="Crying Alone - Sad & Emotional Piano Song Instrumental.mp3" type="audio/mp3">
+            </audio>
+        </div>
+        
+        <main class="content">
+            <div class="input-section">
+                <textarea class="thought-input" id="thoughtInput" placeholder="Tulis pikiran atau perasaanmu di sini..."></textarea>
+            </div>
+            
+            <div class="button-container">
+                <button class="button" id="submitThoughts">Release Thoughts</button>
+                <button class="button" id="startTimer">Start Timer</button>
+                <button class="button" id="resetTimer">Reset Timer</button>
+            </div>
+            
+            <div class="timer-container">
+                <div class="timer" id="timer">00:00</div>
+            </div>
+            
+            <div class="response-section">
+                <div id="thoughtsDisplay" class="thoughts-display"></div>
+                <div class="calming-response" id="calmingResponse">
+                    <!-- Affirmation messages will appear here -->
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <button class="nav-button" onclick="window.location.href='index.html'">Go Back to Home</button>
+        </footer>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="pixelthoughts.js"></script>
 </body>
 </html>
