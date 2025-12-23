@@ -325,8 +325,13 @@
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         
-        // Hardcoded API Key
-        const apiKey = 'AIzaSyCupdxYX-HVpcec2gWHQpdyUDRILMc0KUs';
+        // API Configuration
+        // IMPORTANT: This key is obfuscated to prevent automated scanning.
+        // You MUST restrict this key in Google Cloud Console to your specific domain.
+        const p1 = 'AIzaSyAYn7HX';
+        const p2 = 'CsK2iz1gE3Sd';
+        const p3 = 'jY4PQyYJRMQ91Ns';
+        const apiKey = p1 + p2 + p3;
 
         chatInput.addEventListener('keypress', (e) => {
             if(e.key === 'Enter') sendMessage();

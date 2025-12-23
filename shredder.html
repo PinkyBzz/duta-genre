@@ -101,52 +101,47 @@
                 return;
             }
 
-            // Disable interaction
-            input.disabled = true;
-            btn.disabled = true;
-            btn.textContent = "SHREDDING...";
-
-            // Animate Paper Down
-            paper.style.transition = "transform 3s linear";
-            paper.style.transform = "translateY(100%)";
-
-            // Create Shreds Effect
-            let interval = setInterval(() => {
-                createShreds();
-            }, 100);
-
-            // Sound Effect (Simulated with oscillator if no file)
+            // 1. Play Sound
             playShredSound();
 
+            // 2. Animate Paper Down
+            paper.style.transform = "translateY(120%)";
+            paper.style.transition = "transform 3s ease-in";
+
+            // 3. Disable Input
+            input.disabled = true;
+            btn.disabled = true;
+            btn.innerText = "Shredding...";
+
+            // 4. Create Confetti Effect
+            let interval = setInterval(() => {
+                createConfetti();
+            }, 50);
+
+            // 5. Reset after animation
             setTimeout(() => {
                 clearInterval(interval);
-                paper.style.opacity = "0";
+                paper.style.transition = "none";
+                paper.style.transform = "translateY(-150%)"; // Move to top hidden
                 
-                // Reset
                 setTimeout(() => {
-                    paper.style.transition = "none";
+                    paper.style.transition = "transform 0.5s ease-out";
                     paper.style.transform = "translateY(0)";
-                    paper.style.opacity = "1";
                     input.value = "";
                     input.disabled = false;
                     btn.disabled = false;
                     btn.innerHTML = '<span class="iconify" data-icon="lucide:trash-2"></span> SHRED IT!';
-                    
-                    // Success Message
-                    alert("Worry shredded! Feel lighter?");
-                }, 1000);
+                }, 100);
             }, 3000);
-        }
 
-        function createShreds() {
-            const container = document.getElementById('shreddedContainer');
-            const colors = ['#f1f5f9', '#e2e8f0', '#cbd5e1'];
-            
-            for(let i=0; i<5; i++) {
+            function createConfetti() {
                 const shred = document.createElement('div');
-                shred.className = 'absolute bg-white w-2 h-8';
-                shred.style.left = (Math.random() * 300 + (window.innerWidth/2 - 150)) + 'px';
-                shred.style.top = '-20px';
+                shred.classList.add('confetti');
+                shred.style.left = Math.random() * 100 + "%";
+                shred.style.width = Math.random() * 10 + 5 + "px";
+                shred.style.height = Math.random() * 20 + 10 + "px";
+                
+                const colors = ['#fff', '#f0f0f0', '#e2e8f0'];
                 shred.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 shred.style.transform = `rotate(${Math.random() * 360}deg)`;
                 
