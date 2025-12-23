@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DutGen - Worry Shredder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'shred': 'shred 2s forwards ease-in',
+                    },
+                    keyframes: {
+                        shred: {
+                            '0%': { transform: 'translateY(0)' },
+                            '100%': { transform: 'translateY(120%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .paper-texture {
+            background-color: #fff;
+            background-image: linear-gradient(#eee .1em, transparent .1em);
+            background-size: 100% 1.2em;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .shredder-mouth {
+            background: #334155;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-600 font-sans min-h-screen flex flex-col items-center justify-center overflow-hidden relative">
+
+    <!-- Back Button -->
+    <a href="index.html" class="absolute top-6 left-6 p-3 bg-white rounded-full shadow-md hover:bg-slate-50 transition-colors z-50">
+        <span class="iconify w-6 h-6 text-slate-600" data-icon="lucide:arrow-left"></span>
+    </a>
+
+    <div class="text-center mb-8 z-10">
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">The Worry Shredder</h1>
+        <p class="text-slate-500">Write it down. Shred it. Let it go.</p>
+    </div>
+
+    <!-- Shredder Machine Top -->
+    <div class="w-80 h-12 bg-slate-700 rounded-t-xl z-20 relative shadow-lg flex items-center justify-center">
+        <div class="w-64 h-2 bg-black/30 rounded-full"></div>
+    </div>
+
+    <!-- Paper Input Area -->
+    <div class="relative z-10 w-72 transition-transform duration-1000" id="paperContainer">
+        <textarea id="worryInput" class="w-full h-64 p-6 paper-texture text-slate-700 font-handwriting text-lg resize-none focus:outline-none" placeholder="Type your worry here..."></textarea>
+    </div>
+
+    <!-- Shredder Machine Bottom -->
+    <div class="w-80 h-48 bg-slate-700 rounded-b-xl z-30 relative shadow-2xl flex flex-col items-center pt-4">
+        <div class="w-full h-4 bg-black/20 mb-4"></div>
+        
+        <button onclick="shredWorry()" id="shredBtn" class="px-8 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+            <span class="iconify" data-icon="lucide:trash-2"></span>
+            SHRED IT!
+        </button>
+
+        <div class="mt-4 text-slate-400 text-xs">Sound On 🔊</div>
+    </div>
+
+    <!-- Shredded Paper Container (Hidden initially) -->
+    <div id="shreddedContainer" class="absolute top-[60%] w-full h-full pointer-events-none overflow-hidden"></div>
+
+    <script>
+        function shredWorry() {
+            const input = document.getElementById('worryInput');
+            const paper = document.getElementById('paperContainer');
+            const btn = document.getElementById('shredBtn');
+            const container = document.getElementById('shreddedContainer');
+
+            if (!input.value.trim()) {
+                alert("Please write something first.");
+                return;
+            }
+
+            // Disable interaction
+            input.disabled = true;
+            btn.disabled = true;
+            btn.textContent = "SHREDDING...";
+
+            // Animate Paper Down
+            paper.style.transition = "transform 3s linear";
+            paper.style.transform = "translateY(100%)";
+
+            // Create Shreds Effect
+            let interval = setInterval(() => {
+                createShreds();
+            }, 100);
+
+            // Sound Effect (Simulated with oscillator if no file)
+            playShredSound();
+
+            setTimeout(() => {
+                clearInterval(interval);
+                paper.style.opacity = "0";
+                
+                // Reset
+                setTimeout(() => {
+                    paper.style.transition = "none";
+                    paper.style.transform = "translateY(0)";
+                    paper.style.opacity = "1";
+                    input.value = "";
+                    input.disabled = false;
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="iconify" data-icon="lucide:trash-2"></span> SHRED IT!';
+                    
+                    // Success Message
+                    alert("Worry shredded! Feel lighter?");
+                }, 1000);
+            }, 3000);
+        }
+
+        function createShreds() {
+            const container = document.getElementById('shreddedContainer');
+            const colors = ['#f1f5f9', '#e2e8f0', '#cbd5e1'];
+            
+            for(let i=0; i<5; i++) {
+                const shred = document.createElement('div');
+                shred.className = 'absolute bg-white w-2 h-8';
+                shred.style.left = (Math.random() * 300 + (window.innerWidth/2 - 150)) + 'px';
+                shred.style.top = '-20px';
+                shred.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                shred.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // Animation
+                shred.animate([
+                    { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(${window.innerHeight/2}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+                ], {
+                    duration: 1500 + Math.random() * 1000,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+
+                container.appendChild(shred);
+                
+                // Cleanup
+                setTimeout(() => shred.remove(), 2500);
+            }
+        }
+
+        function playShredSound() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            // White noise approximation for shredder sound
+            const bufferSize = 2 * ctx.sampleRate;
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const whiteNoise = ctx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+            
+            // Filter to make it sound mechanical
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 400;
+
+            whiteNoise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            gain.gain.setValueAtTime(0.5, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 3);
+
+            whiteNoise.start();
+            whiteNoise.stop(ctx.currentTime + 3);
+        }
+    </script>
+</body>
+</html>
