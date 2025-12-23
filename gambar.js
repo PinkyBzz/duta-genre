@@ -245,28 +245,53 @@ document.addEventListener('DOMContentLoaded', function() {
     function createColorPalette() {
         if (document.querySelector('.color-palette-modal')) return;
 
+        // Create modal container
         const palette = document.createElement('div');
-        palette.className = 'color-palette-modal absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex gap-2 z-50 animate__animated animate__fadeInUp';
+        palette.className = 'color-palette-modal fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm animate__animated animate__fadeIn';
         
+        // Create palette box
+        const box = document.createElement('div');
+        box.className = 'bg-white p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-4 animate__animated animate__zoomIn';
+        
+        const title = document.createElement('h3');
+        title.textContent = 'Choose Color';
+        title.className = 'text-lg font-bold text-slate-700';
+        box.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-4 gap-4';
+
         colors.forEach(color => {
             const colorOption = document.createElement('div');
-            colorOption.className = 'w-8 h-8 rounded-full cursor-pointer transition-transform hover:scale-110 border-2 border-white shadow-sm';
+            colorOption.className = 'w-12 h-12 rounded-full cursor-pointer transition-transform hover:scale-110 border-4 border-white shadow-md';
             colorOption.style.backgroundColor = color;
             
             if (color === currentColor) {
-                colorOption.classList.add('ring-2', 'ring-slate-400');
+                colorOption.classList.add('ring-4', 'ring-rose-200');
             }
             
             colorOption.addEventListener('click', () => {
                 currentColor = color;
                 palette.remove();
-                showMessage(`Color changed!`);
+                showMessage(`Color changed to ${color}!`);
             });
             
-            palette.appendChild(colorOption);
+            grid.appendChild(colorOption);
         });
         
-        videoWrapper.appendChild(palette);
+        box.appendChild(grid);
+        
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'mt-2 text-slate-400 hover:text-slate-600 text-sm font-medium';
+        closeBtn.textContent = 'Cancel';
+        closeBtn.addEventListener('click', () => palette.remove());
+        box.appendChild(closeBtn);
+
+        palette.appendChild(box);
+        
+        // Append to body instead of videoWrapper
+        document.body.appendChild(palette);
     }
     
     function showMessage(text, isError = false) {
