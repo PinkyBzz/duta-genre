@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+
+import os
+
+html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -134,4 +137,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="badMood.js"></script>
 </body>
-</html>
+</html>"""
+
+with open(r"c:\Users\ASUS\OneDrive\ドキュメント\buat tugas\DutGen\dugen html\badMood.html", "w", encoding="utf-8") as f:
+    f.write(html_content)

@@ -28,23 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
         '#E91E63', // pink
     ];
     
-    // Affirmation messages
-    const affirmationMessages = [
-        "Wah, gambar yang sangat kreatif!",
-        "Ekspresikan emosimu melalui karya seni.",
-        "Setiap garis yang kamu buat punya makna tersendiri.",
-        "Teruslah berkreasi, kamu berbakat!",
-        "Seni adalah cara untuk melepaskan perasaan negatif.",
-        "Indahnya berekspresi melalui gambar.",
-        "Tak perlu sempurna, cukup ekspresif.",
-        "Menggambar adalah terapi untuk pikiran dan hati.",
-    ];
-    
     // Set canvas dimensions to match video container
     function setCanvasDimensions() {
-        const videoContainer = document.querySelector('.video-container');
-        canvas.width = videoContainer.clientWidth;
-        canvas.height = videoContainer.clientHeight;
+        const videoWrapper = document.querySelector('.video-wrapper');
+        if (videoWrapper) {
+            canvas.width = videoWrapper.clientWidth;
+            canvas.height = videoWrapper.clientHeight;
+        }
     }
     
     // Initial setup
@@ -60,49 +50,53 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Load handtrack model
-    handTrack.load(modelParams).then(loadedModel => {
-        model = loadedModel;
-        showMessage("Model loaded successfully! Starting video...");
-        startVideo();
-    }).catch(err => {
-        console.error("Error loading model:", err);
-        showMessage("Error loading model. Please try again.", true);
-    });
+    if (typeof handTrack !== 'undefined') {
+        handTrack.load(modelParams).then(loadedModel => {
+            model = loadedModel;
+            showMessage("Model loaded! Starting camera...");
+            startVideo();
+        }).catch(err => {
+            console.error("Error loading model:", err);
+            showMessage("Error loading AI model. Please refresh.", true);
+        });
+    } else {
+        showMessage("Library not loaded. Please check internet connection.", true);
+    }
     
     // Start webcam video
     function startVideo() {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                video.onloadedmetadata = () => {
-                    handTrack.startVideo(video).then(status => {
-                        if (status) {
-                            statusIndicator.classList.add('hidden');
-                            showMessage("Camera activated! Move your hand to start drawing.");
-                            detectHand();
-                        } else {
-                            showMessage("Failed to start video. Please check camera permissions.", true);
-                        }
-                    });
-                };
-            })
-            .catch(err => {
-                console.error("Error accessing webcam:", err);
-                showMessage("Please allow camera access to use this feature.", true);
-            });
+        handTrack.startVideo(video).then(status => {
+            if (status) {
+                // Hide the loading overlay
+                statusIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    statusIndicator.style.display = 'none';
+                }, 500);
+                
+                setCanvasDimensions();
+                showMessage("Camera active! Raise your hand to draw.");
+                detectHand();
+            } else {
+                showMessage("Please enable camera access.", true);
+            }
+        });
     }
     
     // Detect hand and draw
     function detectHand() {
         model.detect(video).then(predictions => {
-            // Filter predictions to include hands with reasonable confidence
-            const validHands = predictions.filter(p => p.score > 0.7);
+            // Filter predictions
+            const validPredictions = predictions.filter(p => p.score > 0.6);
             
-            if (validHands.length > 0) {
-                const hand = validHands[0];
-                // Use center of the hand bounding box
-                const x = (hand.bbox[0] + (hand.bbox[2] / 2)) * (canvas.width / video.width);
-                const y = (hand.bbox[1] + hand.bbox[3] / 3) * (canvas.height / video.height); // Use upper third for "nose" position
+            if (validPredictions.length > 0) {
+                const pred = validPredictions[0];
+                
+                // Map coordinates
+                // Using top-center of bounding box to approximate fingertip
+                // pred.bbox = [x, y, width, height]
+                
+                const x = (pred.bbox[0] + pred.bbox[2] / 2) / video.width * canvas.width;
+                const y = (pred.bbox[1]) / video.height * canvas.height;
                 
                 if (!isDrawing) {
                     isDrawing = true;
@@ -117,16 +111,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             requestAnimationFrame(detectHand);
         }).catch(err => {
-            console.error("Error in hand detection:", err);
             requestAnimationFrame(detectHand);
         });
     }
     
     // Draw line on canvas
     function drawLine(x, y) {
-        // Create particle effect at drawing point
-        createParticle(x, y);
-        
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
         ctx.lineTo(x, y);
@@ -140,159 +130,62 @@ document.addEventListener('DOMContentLoaded', function() {
         lastY = y;
     }
     
-    // Create particle effect
-    function createParticle(x, y) {
-        const particle = document.createElement('div');
-        particle.classList.add('drawing-particle');
-        
-        // Style the particle
-        particle.style.position = 'absolute';
-        particle.style.width = '8px';
-        particle.style.height = '8px';
-        particle.style.backgroundColor = currentColor;
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '10';
-        
-        // Position relative to canvas
-        const rect = canvas.getBoundingClientRect();
-        particle.style.left = (rect.left + x) + 'px';
-        particle.style.top = (rect.top + y) + 'px';
-        
-        // Add to DOM
-        document.body.appendChild(particle);
-        
-        // Animate and remove
-        setTimeout(() => {
-            particle.style.transition = 'all 0.5s ease-out';
-            particle.style.transform = 'scale(1.5)';
-            particle.style.opacity = '0';
-        }, 10);
-        
-        setTimeout(() => {
-            if (particle && particle.parentNode) {
-                particle.remove();
-            }
-        }, 500);
-    }
-    
     // Create color selection UI
     function createColorPalette() {
+        if (document.querySelector('.color-palette-modal')) return;
+
         const palette = document.createElement('div');
-        palette.className = 'color-palette';
+        palette.className = 'color-palette-modal absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex gap-2 z-50 animate__animated animate__fadeInUp';
         
         colors.forEach(color => {
             const colorOption = document.createElement('div');
-            colorOption.className = 'color-option';
+            colorOption.className = 'w-8 h-8 rounded-full cursor-pointer transition-transform hover:scale-110 border-2 border-white shadow-sm';
             colorOption.style.backgroundColor = color;
+            
             if (color === currentColor) {
-                colorOption.classList.add('active');
+                colorOption.classList.add('ring-2', 'ring-slate-400');
             }
             
             colorOption.addEventListener('click', () => {
-                // Remove active class from all options
-                document.querySelectorAll('.color-option').forEach(opt => {
-                    opt.classList.remove('active');
-                });
-                
-                // Add active class to selected option
-                colorOption.classList.add('active');
-                
-                // Update current color
                 currentColor = color;
-                
-                // Hide palette after selection
                 palette.remove();
+                showMessage(`Color changed!`);
             });
             
             palette.appendChild(colorOption);
         });
         
-        // Add palette to DOM
-        const controls = document.querySelector('.controls');
-        controls.parentNode.insertBefore(palette, controls);
-        
-        // Show affirmation for color change
-        showMessage("Silakan pilih warna yang mencerminkan perasaanmu saat ini.");
+        const wrapper = document.querySelector('.video-wrapper');
+        wrapper.appendChild(palette);
     }
     
-    // Show message with animation
+    // Show message
     function showMessage(text, isError = false) {
-        // Clear existing message
-        messageDiv.innerHTML = '';
-        
-        // Create message box
-        const messageBox = document.createElement('div');
-        messageBox.className = 'message-box';
+        messageDiv.textContent = text;
         if (isError) {
-            messageBox.style.backgroundColor = 'rgba(220, 53, 69, 0.3)';
+            messageDiv.className = 'text-center min-h-[24px] text-red-500 font-medium mb-12 animate__animated animate__fadeIn';
+        } else {
+            messageDiv.className = 'text-center min-h-[24px] text-rose-500 font-medium mb-12 animate__animated animate__fadeIn';
         }
-        
-        // Create message text
-        const messageText = document.createElement('p');
-        messageText.className = 'message-text';
-        messageText.textContent = text;
-        
-        // Append to DOM
-        messageBox.appendChild(messageText);
-        messageDiv.appendChild(messageBox);
-        
-        // Show the message
-        messageDiv.classList.add('active');
-        
-        // Hide message after delay (if not an error)
-        if (!isError) {
-            setTimeout(() => {
-                messageDiv.classList.remove('active');
-            }, 5000);
-        }
-    }
-    
-    // Show random affirmation
-    function showRandomAffirmation() {
-        const randomIndex = Math.floor(Math.random() * affirmationMessages.length);
-        showMessage(affirmationMessages[randomIndex]);
     }
     
     // Event Listeners
-    
-    // Clear canvas
     clearBtn.addEventListener('click', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        showMessage("Kanvas telah dibersihkan. Mulai menggambar lagi!");
+        showMessage("Canvas cleared!");
     });
     
-    // Save drawing
     saveBtn.addEventListener('click', () => {
-        try {
-            const dataURL = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = 'gambar_hidung_' + new Date().toISOString().split('T')[0] + '.png';
-            link.href = dataURL;
-            link.click();
-            showMessage("Gambar Anda berhasil disimpan!");
-        } catch (err) {
-            console.error("Error saving image:", err);
-            showMessage("Gagal menyimpan gambar. Silakan coba lagi.", true);
-        }
+        const link = document.createElement('a');
+        link.download = 'dutgen-art.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        showMessage("Art saved!");
     });
     
-    // Change color
     colorBtn.addEventListener('click', () => {
-        // Remove existing palette if any
-        const existingPalette = document.querySelector('.color-palette');
-        if (existingPalette) {
-            existingPalette.remove();
-        } else {
-            createColorPalette();
-        }
+        const existing = document.querySelector('.color-palette-modal');
+        if (existing) existing.remove();
+        else createColorPalette();
     });
-    
-    // Show initial affirmation after a delay
-    setTimeout(() => {
-        showRandomAffirmation();
-    }, 5000);
-    
-    // Show a new affirmation periodically
-    setInterval(showRandomAffirmation, 20000);
 });
