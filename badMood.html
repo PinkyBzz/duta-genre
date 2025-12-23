@@ -44,7 +44,32 @@
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
         }
+        /* Holographic Effect */
+        .glass-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                125deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.3) 30%,
+                rgba(255, 182, 193, 0.3) 40%, /* Pinkish */
+                rgba(173, 216, 230, 0.3) 60%, /* Blueish */
+                rgba(255, 255, 255, 0.3) 70%,
+                transparent 100%
+            );
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .glass-card:hover::after {
+            opacity: 1;
+        }
+
         /* Chat Scrollbar */
         .chat-container::-webkit-scrollbar { width: 4px; }
         .chat-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -211,7 +236,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
-        // --- Vanta.js Background ---
+        // --- Vanta.js Background (Aurora) ---
         try {
             VANTA.FOG({
                 el: "#vanta-bg",
@@ -220,13 +245,13 @@
                 gyroControls: false,
                 minHeight: 200.00,
                 minWidth: 200.00,
-                highlightColor: 0xa5b4fc, // Indigo-300
-                midtoneColor: 0xc4b5fd,   // Violet-300
-                lowlightColor: 0xf0f4f8,
-                baseColor: 0xffffff,
-                blurFactor: 0.6,
-                speed: 1.2,
-                zoom: 0.8
+                highlightColor: 0x22d3ee, // Cyan
+                midtoneColor: 0xc084fc,   // Purple
+                lowlightColor: 0x818cf8,  // Indigo
+                baseColor: 0xf0f9ff,      // Very light blue
+                blurFactor: 0.9,
+                speed: 2.5,
+                zoom: 1.2
             });
         } catch (e) { console.log("Vanta Error", e); }
 

@@ -48,7 +48,32 @@
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
         }
+        /* Holographic Effect */
+        .glass-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                125deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.3) 30%,
+                rgba(255, 182, 193, 0.3) 40%, /* Pinkish */
+                rgba(173, 216, 230, 0.3) 60%, /* Blueish */
+                rgba(255, 255, 255, 0.3) 70%,
+                transparent 100%
+            );
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .glass-card:hover::after {
+            opacity: 1;
+        }
+        
         .modal-overlay {
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(5px);
@@ -92,74 +117,122 @@
     <div id="vanta-bg" class="fixed inset-0 w-full h-full pointer-events-none z-[-1]"></div>
 
     <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-6 py-10">
+    <main class="max-w-4xl mx-auto px-6 py-12">
         
         <!-- Header -->
-        <header class="flex justify-between items-center mb-10 animate__animated animate__fadeInDown">
+        <header class="flex justify-between items-end mb-12 animate__animated animate__fadeInDown">
             <div>
-                <h1 id="dynamicGreeting" class="text-3xl font-bold text-slate-800 tracking-tight">Hello, Friend!</h1>
-                <p class="text-slate-500">How is your heart doing today?</p>
+                <h1 id="dynamicGreeting" class="text-4xl font-bold text-slate-800 tracking-tight mb-2">Hello, Friend!</h1>
+                <p class="text-lg text-slate-600 font-medium">How is your heart doing today?</p>
+                <p id="dailyQuote" class="text-slate-500 mt-2 italic animate__animated animate__fadeIn" style="animation-delay: 0.5s"></p>
             </div>
-            <button onclick="resetDailyMood()" class="p-2 text-slate-400 hover:text-rose-500 transition-colors" title="Reset Daily Mood">
-                <span class="iconify w-6 h-6" data-icon="lucide:refresh-cw"></span>
+            <button onclick="resetDailyMood()" class="p-3 bg-white/50 hover:bg-white rounded-full transition-all shadow-sm group" title="Reset Daily Mood">
+                <span class="iconify w-5 h-5 text-slate-500 group-hover:text-rose-500 transition-colors" data-icon="lucide:refresh-cw"></span>
             </button>
         </header>
 
+        <!-- Section 1: Quick Relief -->
+        <section class="mb-12 animate__animated animate__fadeInUp" id="tools-section">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-rose-100 rounded-xl text-rose-600">
+                    <span class="iconify w-5 h-5" data-icon="lucide:zap"></span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800">Quick Relief</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Bad Mood Card -->
+                <a href="badMood.html" class="group glass-card p-8 rounded-[2rem] hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 border border-white/60 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-rose-100/50 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-rose-200/50"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-rose-500 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="iconify w-7 h-7" data-icon="lucide:frown"></span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Bad Mood?</h3>
+                        <p class="text-slate-600 leading-relaxed">Support tools for difficult moments. Breathing, music, and chat.</p>
+                    </div>
+                </a>
+
+                <!-- Worry Shredder Card -->
+                <a href="shredder.html" class="group glass-card p-8 rounded-[2rem] hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 border border-white/60 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-100/50 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-orange-200/50"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-orange-500 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="iconify w-7 h-7" data-icon="lucide:shredder"></span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Worry Shredder</h3>
+                        <p class="text-slate-600 leading-relaxed">Write down your worries and shred them into oblivion.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Section 2: Deep Healing -->
+        <section class="mb-12 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-indigo-100 rounded-xl text-indigo-600">
+                    <span class="iconify w-5 h-5" data-icon="lucide:sparkles"></span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800">Deep Healing</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Pixel Thoughts Card -->
+                <a href="pixelThoughts.html" class="group glass-card p-8 rounded-[2rem] hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 border border-white/60 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-100/50 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-indigo-200/50"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-500 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="iconify w-7 h-7" data-icon="lucide:stars"></span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Pixel Thoughts</h3>
+                        <p class="text-slate-600 leading-relaxed">Release your stress into the universe. Let it fade away.</p>
+                    </div>
+                </a>
+
+                <!-- Drawing Card -->
+                <a href="gambar.html" class="group glass-card p-8 rounded-[2rem] hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 border border-white/60 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-100/50 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-emerald-200/50"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-500 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <span class="iconify w-7 h-7" data-icon="lucide:palette"></span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Art Therapy</h3>
+                        <p class="text-slate-600 leading-relaxed">Express yourself with Finger Drawing or Touch Canvas.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
         <!-- Mood Chart Section -->
-        <section class="mb-10 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
-            <div class="glass-card rounded-3xl p-6 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                        <span class="iconify text-violet-500" data-icon="lucide:bar-chart-2"></span>
-                        Mood Analytics
-                    </h2>
-                    <span class="text-xs font-medium px-3 py-1 bg-white/50 rounded-full text-slate-500">Last 7 Days</span>
+        <section class="mb-10 animate__animated animate__fadeInUp" style="animation-delay: 0.2s" id="journal-section">
+            <div class="glass-card rounded-[2rem] p-8 shadow-sm border border-white/60">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-violet-100 rounded-xl text-violet-600">
+                            <span class="iconify w-5 h-5" data-icon="lucide:bar-chart-2"></span>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800">Mood Analytics</h2>
+                    </div>
+                    <span class="text-xs font-bold px-4 py-2 bg-white rounded-full text-slate-500 shadow-sm">Last 7 Days</span>
                 </div>
                 <div class="h-64 w-full">
                     <canvas id="moodChart"></canvas>
                 </div>
+
+                <!-- History List -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Recent Thoughts</h3>
+                    <div id="journalHistory" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- JS will populate this -->
+                        <div class="text-center text-slate-400 text-sm py-4">No entries yet.</div>
+                    </div>
+                </div>
             </div>
         </section>
-
-        <!-- Menu Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-            
-            <!-- Bad Mood Card -->
-            <a href="badMood.html" class="group glass-card p-6 rounded-3xl hover:bg-white/80 transition-all duration-300 shadow-sm border-l-4 border-l-rose-400" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-500 mb-4 group-hover:scale-110 transition-transform" style="transform: translateZ(20px)">
-                    <span class="iconify w-6 h-6" data-icon="lucide:frown"></span>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2" style="transform: translateZ(10px)">Bad Mood?</h3>
-                <p class="text-sm text-slate-500" style="transform: translateZ(10px)">Support tools for difficult moments. Breathing, music, and chat.</p>
-            </a>
-
-            <!-- Pixel Thoughts Card -->
-            <a href="pixelThoughts.html" class="group glass-card p-6 rounded-3xl hover:bg-white/80 transition-all duration-300 shadow-sm border-l-4 border-l-indigo-400" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-500 mb-4 group-hover:scale-110 transition-transform" style="transform: translateZ(20px)">
-                    <span class="iconify w-6 h-6" data-icon="lucide:stars"></span>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2" style="transform: translateZ(10px)">Pixel Thoughts</h3>
-                <p class="text-sm text-slate-500" style="transform: translateZ(10px)">Release your stress into the universe. Let it fade away.</p>
-            </a>
-
-            <!-- Drawing Card -->
-            <a href="gambar.html" class="group glass-card p-6 rounded-3xl hover:bg-white/80 transition-all duration-300 shadow-sm border-l-4 border-l-emerald-400" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform" style="transform: translateZ(20px)">
-                    <span class="iconify w-6 h-6" data-icon="lucide:palette"></span>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2" style="transform: translateZ(10px)">Art Therapy</h3>
-                <p class="text-sm text-slate-500" style="transform: translateZ(10px)">Express yourself with Finger Drawing or Touch Canvas.</p>
-            </a>
-
-            <!-- Worry Shredder Card -->
-            <a href="shredder.html" class="group glass-card p-6 rounded-3xl hover:bg-white/80 transition-all duration-300 shadow-sm border-l-4 border-l-orange-400" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-500 mb-4 group-hover:scale-110 transition-transform" style="transform: translateZ(20px)">
-                    <span class="iconify w-6 h-6" data-icon="lucide:shredder"></span>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2" style="transform: translateZ(10px)">Worry Shredder</h3>
-                <p class="text-sm text-slate-500" style="transform: translateZ(10px)">Write down your worries and shred them into oblivion.</p>
-            </a>
-        </div>
 
     </main>
 
@@ -213,8 +286,7 @@
 
         const today = new Date().toISOString().split('T')[0];
         const modal = document.getElementById('checkInModal');
-        const greeting = document.getElementById('userGreeting');
-
+        
         // 1. Check if already checked in
         function init() {
             const data = JSON.parse(localStorage.getItem('dutgen_logs') || '{}');
@@ -222,12 +294,10 @@
             if (!data[today]) {
                 // Show modal if no data for today
                 modal.classList.remove('hidden');
-            } else {
-                // Update greeting if data exists
-                updateGreeting(data[today].moodValue);
             }
             
             renderChart(data);
+            renderHistory(data);
             
             // Register Service Worker
             if ('serviceWorker' in navigator) {
@@ -275,18 +345,6 @@
             }
         }
 
-        // 4. Helper: Update Greeting
-        function updateGreeting(val) {
-            const moods = {
-                5: "Amazing",
-                4: "Good",
-                3: "Okay",
-                2: "Strong",
-                1: "Brave"
-            };
-            greeting.textContent = moods[val] || "Friend";
-        }
-
         // 5. Render Chart
         function renderChart(data) {
             const ctx = document.getElementById('moodChart').getContext('2d');
@@ -309,8 +367,12 @@
                     values.push(null); // Gap in chart
                 }
             }
+// Destroy existing chart if it exists to prevent overlay
+            if (window.myMoodChart) {
+                window.myMoodChart.destroy();
+            }
 
-            new Chart(ctx, {
+            window.myMoodChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -355,11 +417,74 @@
             });
         }
 
+        // 6. Render History
+        function renderHistory(data) {
+            const container = document.getElementById('journalHistory');
+            const dates = Object.keys(data).sort().reverse(); // Newest first
+            
+            if (dates.length === 0) return;
+
+            let html = '';
+            const moodMap = {1: '😫', 2: '😕', 3: '😐', 4: '🙂', 5: '😄'};
+            const moodColors = {
+                1: 'bg-slate-100 text-slate-500', 
+                2: 'bg-orange-100 text-orange-500', 
+                3: 'bg-blue-100 text-blue-500', 
+                4: 'bg-teal-100 text-teal-500', 
+                5: 'bg-rose-100 text-rose-500'
+            };
+
+            dates.forEach(date => {
+                const entry = data[date];
+                const dateObj = new Date(date);
+                const dateDisplay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const moodIcon = moodMap[entry.moodValue] || '😐';
+                const colorClass = moodColors[entry.moodValue] || 'bg-slate-100 text-slate-500';
+                
+                html += `
+                <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-white/50 transition-colors border border-transparent hover:border-white/60">
+                    <div class="flex-shrink-0 w-10 h-10 ${colorClass} rounded-full flex items-center justify-center text-xl shadow-sm">
+                        ${moodIcon}
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-slate-400 uppercase">${dateDisplay}</span>
+                        </div>
+                        <p class="text-slate-700 text-sm leading-relaxed">${entry.journal || 'No notes.'}</p>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 7. Daily Quotes
+        const quotes = [
+            "“This too shall pass.”",
+            "“Breathe. It’s just a bad day, not a bad life.”",
+            "“You are enough just as you are.”",
+            "“One day at a time.”",
+            "“Feelings are visitors; let them come and go.”",
+            "“Peace comes from within. Do not seek it without.”",
+            "“You don’t have to control your thoughts. You just have to stop letting them control you.”",
+            "“Happiness is not something ready made. It comes from your own actions.”",
+            "“The best way out is always through.”",
+            "“Be gentle with yourself. You’re doing the best you can.”"
+        ];
+
+        function updateQuote() {
+            const quoteEl = document.getElementById('dailyQuote');
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            quoteEl.textContent = quotes[randomIndex];
+        }
+
         // Run init
         window.addEventListener('DOMContentLoaded', () => {
             init();
+            updateQuote();
             
-            // Initialize Vanta.js 3D Background
+            // Initialize Vanta.js 3D Background (Aurora Effect)
             try {
                 VANTA.FOG({
                     el: "#vanta-bg",
@@ -368,17 +493,44 @@
                     gyroControls: false,
                     minHeight: 200.00,
                     minWidth: 200.00,
-                    highlightColor: 0xffc0cb, // Pinkish highlight
-                    midtoneColor: 0xe0e7ff,   // Light purple/blue
-                    lowlightColor: 0xf0f4f8,  // Base bg color
-                    baseColor: 0xffffff,
-                    blurFactor: 0.6,
-                    speed: 1.5,
-                    zoom: 0.8
+                    highlightColor: 0x22d3ee, // Cyan
+                    midtoneColor: 0xc084fc,   // Purple
+                    lowlightColor: 0x818cf8,  // Indigo
+                    baseColor: 0xf0f9ff,      // Very light blue
+                    blurFactor: 0.9,          // High blur for aurora look
+                    speed: 2.5,               // Faster movement
+                    zoom: 1.2
                 });
             } catch (e) {
                 console.log("Vanta JS Error:", e);
             }
+
+            // --- Dynamic Greeting ---
+            function updateGreeting() {
+                const hour = new Date().getHours();
+                const greetingEl = document.getElementById('dynamicGreeting');
+                let greeting = "Hello";
+                let icon = "👋";
+
+                if (hour >= 5 && hour < 11) {
+                    greeting = "Good Morning";
+                    icon = "☀️";
+                } else if (hour >= 11 && hour < 15) {
+                    greeting = "Good Afternoon";
+                    icon = "🌤️";
+                } else if (hour >= 15 && hour < 18) {
+                    greeting = "Good Evening";
+                    icon = "🌇";
+                } else {
+                    greeting = "Good Night";
+                    icon = "🌙";
+                }
+
+                if(greetingEl) {
+                    greetingEl.innerHTML = `${greeting}, Friend ${icon}`;
+                }
+            }
+            updateGreeting();
 
             // --- Magic Cursor Logic ---
             const cursorCanvas = document.getElementById('magicCursor');
