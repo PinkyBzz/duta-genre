@@ -5,43 +5,162 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctx = canvas.getContext('2d');
     const statusIndicator = document.getElementById('status');
     const messageDiv = document.getElementById('message');
+    const videoWrapper = document.getElementById('videoWrapper');
+    
+    // Buttons
     const clearBtn = document.getElementById('clearBtn');
     const saveBtn = document.getElementById('saveBtn');
     const colorBtn = document.getElementById('colorBtn');
+    const modeTouchBtn = document.getElementById('modeTouch');
+    const modeCameraBtn = document.getElementById('modeCamera');
     
+    // State
+    let currentMode = 'touch'; // 'touch' or 'camera'
     let model = null;
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
-    let currentColor = '#FFFFFF';
+    let currentColor = '#000000'; // Default black for white canvas
     let lineWidth = 5;
+    let isVideoRunning = false;
     
-    // Drawing colors
-    const colors = [
-        '#FFFFFF', // white
-        '#FF5252', // red
-        '#FFEB3B', // yellow
-        '#4CAF50', // green
-        '#2196F3', // blue
-        '#9C27B0', // purple
-        '#FF9800', // orange
-        '#E91E63', // pink
-    ];
+    // Colors
+    const colors = ['#000000', '#FF5252', '#FFEB3B', '#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#E91E63'];
     
-    // Set canvas dimensions to match video container
+    // --- Initialization ---
+    
+    function init() {
+        setCanvasDimensions();
+        window.addEventListener('resize', setCanvasDimensions);
+        
+        // Default to Touch Mode
+        setMode('touch');
+    }
+    
     function setCanvasDimensions() {
-        const videoWrapper = document.querySelector('.video-wrapper');
         if (videoWrapper) {
+            // Save current content
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Resize
             canvas.width = videoWrapper.clientWidth;
             canvas.height = videoWrapper.clientHeight;
+            
+            // Restore content (scaled)
+            ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+            
+            // Reset context props
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
         }
     }
     
-    // Initial setup
-    setCanvasDimensions();
-    window.addEventListener('resize', setCanvasDimensions);
+    // --- Mode Switching ---
     
-    // Set up model parameters
+    function setMode(mode) {
+        currentMode = mode;
+        
+        if (mode === 'touch') {
+            // UI Updates
+            modeTouchBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-slate-800 shadow-sm';
+            modeCameraBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 transition-all';
+            
+            // Canvas/Video Updates
+            videoWrapper.classList.remove('camera-mode');
+            video.classList.add('hidden');
+            statusIndicator.classList.add('hidden');
+            canvas.style.transform = 'none'; // No mirror for touch
+            
+            // Stop Video if running
+            if (isVideoRunning) {
+                handTrack.stopVideo(video);
+                isVideoRunning = false;
+            }
+            
+            // Reset Color to Black (better for white bg)
+            currentColor = '#000000';
+            showMessage("Touch Mode: Draw with your mouse or finger.");
+            
+        } else {
+            // UI Updates
+            modeCameraBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-slate-800 shadow-sm';
+            modeTouchBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 transition-all';
+            
+            // Canvas/Video Updates
+            videoWrapper.classList.add('camera-mode');
+            video.classList.remove('hidden');
+            statusIndicator.classList.remove('hidden');
+            canvas.style.transform = 'scaleX(-1)'; // Mirror for camera
+            
+            // Reset Color to White (better for video bg)
+            currentColor = '#FFFFFF';
+            
+            // Start Video
+            startCameraLogic();
+        }
+    }
+    
+    modeTouchBtn.addEventListener('click', () => setMode('touch'));
+    modeCameraBtn.addEventListener('click', () => setMode('camera'));
+    
+    // --- Touch/Mouse Logic ---
+    
+    function getCoordinates(e) {
+        const rect = canvas.getBoundingClientRect();
+        let clientX, clientY;
+        
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+    
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    canvas.addEventListener('touchend', stopDrawing);
+    
+    function startDrawing(e) {
+        if (currentMode !== 'touch') return;
+        if (e.type === 'touchstart') e.preventDefault();
+        
+        isDrawing = true;
+        const coords = getCoordinates(e);
+        lastX = coords.x;
+        lastY = coords.y;
+    }
+    
+    function draw(e) {
+        if (currentMode !== 'touch' || !isDrawing) return;
+        if (e.type === 'touchmove') e.preventDefault();
+        
+        const coords = getCoordinates(e);
+        drawLine(coords.x, coords.y);
+    }
+    
+    function stopDrawing() {
+        isDrawing = false;
+    }
+    
+    // --- Camera Logic ---
+    
     const modelParams = {
         flipHorizontal: true,
         maxNumBoxes: 1,
@@ -49,30 +168,27 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreThreshold: 0.7
     };
     
-    // Load handtrack model
-    if (typeof handTrack !== 'undefined') {
-        handTrack.load(modelParams).then(loadedModel => {
-            model = loadedModel;
-            showMessage("Model loaded! Starting camera...");
+    function startCameraLogic() {
+        if (typeof handTrack === 'undefined') {
+            showMessage("Library not loaded.", true);
+            return;
+        }
+        
+        if (!model) {
+            handTrack.load(modelParams).then(loadedModel => {
+                model = loadedModel;
+                startVideo();
+            });
+        } else {
             startVideo();
-        }).catch(err => {
-            console.error("Error loading model:", err);
-            showMessage("Error loading AI model. Please refresh.", true);
-        });
-    } else {
-        showMessage("Library not loaded. Please check internet connection.", true);
+        }
     }
     
-    // Start webcam video
     function startVideo() {
         handTrack.startVideo(video).then(status => {
             if (status) {
-                // Hide the loading overlay
-                statusIndicator.style.opacity = '0';
-                setTimeout(() => {
-                    statusIndicator.style.display = 'none';
-                }, 500);
-                
+                isVideoRunning = true;
+                statusIndicator.style.display = 'none';
                 setCanvasDimensions();
                 showMessage("Camera active! Raise your hand to draw.");
                 detectHand();
@@ -82,19 +198,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Detect hand and draw
     function detectHand() {
+        if (currentMode !== 'camera' || !isVideoRunning) return;
+        
         model.detect(video).then(predictions => {
-            // Filter predictions
             const validPredictions = predictions.filter(p => p.score > 0.6);
             
             if (validPredictions.length > 0) {
                 const pred = validPredictions[0];
-                
-                // Map coordinates
-                // Using top-center of bounding box to approximate fingertip
-                // pred.bbox = [x, y, width, height]
-                
                 const x = (pred.bbox[0] + pred.bbox[2] / 2) / video.width * canvas.width;
                 const y = (pred.bbox[1]) / video.height * canvas.height;
                 
@@ -110,12 +221,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             requestAnimationFrame(detectHand);
-        }).catch(err => {
-            requestAnimationFrame(detectHand);
         });
     }
     
-    // Draw line on canvas
+    // --- Shared Drawing Logic ---
+    
     function drawLine(x, y) {
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
@@ -130,7 +240,8 @@ document.addEventListener('DOMContentLoaded', function() {
         lastY = y;
     }
     
-    // Create color selection UI
+    // --- UI Helpers ---
+    
     function createColorPalette() {
         if (document.querySelector('.color-palette-modal')) return;
 
@@ -155,18 +266,14 @@ document.addEventListener('DOMContentLoaded', function() {
             palette.appendChild(colorOption);
         });
         
-        const wrapper = document.querySelector('.video-wrapper');
-        wrapper.appendChild(palette);
+        videoWrapper.appendChild(palette);
     }
     
-    // Show message
     function showMessage(text, isError = false) {
         messageDiv.textContent = text;
-        if (isError) {
-            messageDiv.className = 'text-center min-h-[24px] text-red-500 font-medium mb-12 animate__animated animate__fadeIn';
-        } else {
-            messageDiv.className = 'text-center min-h-[24px] text-rose-500 font-medium mb-12 animate__animated animate__fadeIn';
-        }
+        messageDiv.className = isError 
+            ? 'text-center min-h-[24px] text-red-500 font-medium mb-12 animate__animated animate__fadeIn'
+            : 'text-center min-h-[24px] text-rose-500 font-medium mb-12 animate__animated animate__fadeIn';
     }
     
     // Event Listeners
@@ -188,4 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (existing) existing.remove();
         else createColorPalette();
     });
+    
+    // Start
+    init();
 });

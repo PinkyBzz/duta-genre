@@ -1,0 +1,20 @@
+{
+  "name": "DutGen - Mental Health Companion",
+  "short_name": "DutGen",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#f0f4f8",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/lucide:heart-handshake.svg?color=%238b5cf6",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.iconify.design/lucide:heart-handshake.svg?color=%238b5cf6",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DutGen - Finger Draw</title>
+    <title>DutGen - Art Therapy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -46,6 +46,10 @@
             border-radius: 1.5rem;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background: #fff; /* White background for touch mode */
+            transition: background 0.3s;
+        }
+        .video-wrapper.camera-mode {
             background: #000;
         }
         video {
@@ -61,7 +65,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            transform: scaleX(-1); /* Mirror effect to match video */
+            /* Transform handled by JS based on mode */
+            touch-action: none; /* Prevent scrolling on touch */
         }
         .spinner {
             border: 3px solid rgba(255,255,255,0.3);
@@ -75,6 +80,15 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10b981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10b981;
         }
     </style>
 </head>
@@ -92,33 +106,32 @@
         <!-- Header -->
         <header class="text-center mb-10 animate__animated animate__fadeInDown">
             <div class="inline-block p-3 bg-rose-100 text-rose-600 rounded-2xl mb-4 shadow-sm">
-                <span class="iconify w-8 h-8" data-icon="lucide:hand"></span>
+                <span class="iconify w-8 h-8" data-icon="lucide:palette"></span>
             </div>
-            <h1 class="text-4xl font-bold text-slate-800 mb-2 tracking-tight">Finger Drawing</h1>
-            <p class="text-slate-500">Unleash your creativity using your finger!</p>
+            <h1 class="text-4xl font-bold text-slate-800 mb-2 tracking-tight">Art Therapy</h1>
+            <p class="text-slate-500">Express yourself freely.</p>
         </header>
 
-        <!-- Instructions -->
-        <div class="max-w-2xl mx-auto mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
-            <div class="bg-white/60 backdrop-blur-md border border-white/60 rounded-xl p-4 flex items-start gap-4 shadow-sm">
-                <div class="p-2 bg-blue-100 text-blue-600 rounded-lg shrink-0">
-                    <span class="iconify w-5 h-5" data-icon="lucide:info"></span>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-slate-800 text-sm">How to play</h3>
-                    <p class="text-sm text-slate-500 mt-1">Raise your hand in front of the camera. The system will track your fingertip (top of your hand) to draw.</p>
-                </div>
+        <!-- Mode Toggle -->
+        <div class="flex justify-center mb-8 animate__animated animate__fadeInUp">
+            <div class="bg-white/60 backdrop-blur-md p-1 rounded-xl flex items-center shadow-sm border border-white/50">
+                <button id="modeTouch" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-slate-800 shadow-sm">
+                    <span class="iconify inline mr-1" data-icon="lucide:mouse-pointer-2"></span> Touch/Mouse
+                </button>
+                <button id="modeCamera" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 transition-all">
+                    <span class="iconify inline mr-1" data-icon="lucide:camera"></span> Camera (Finger)
+                </button>
             </div>
         </div>
 
         <!-- Video Area -->
         <div class="mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-            <div class="video-wrapper relative group">
-                <video id="webcam" autoplay playsinline></video>
+            <div class="video-wrapper relative group" id="videoWrapper">
+                <video id="webcam" autoplay playsinline class="hidden"></video>
                 <canvas id="canvas"></canvas>
                 
-                <!-- Status Overlay -->
-                <div id="status" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 transition-opacity duration-500">
+                <!-- Status Overlay (Camera Mode Only) -->
+                <div id="status" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 transition-opacity duration-500 hidden">
                     <div class="spinner mb-3"></div>
                     <span class="text-white font-medium tracking-wide">Initializing Camera...</span>
                 </div>

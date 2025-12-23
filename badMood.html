@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DutGen - Bad Mood Support</title>
+    <title>DutGen - Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
                     },
                     animation: {
                         'blob': 'blob 7s infinite',
+                        'breathe': 'breathe 8s infinite ease-in-out',
                     },
                     keyframes: {
                         blob: {
@@ -24,6 +25,10 @@
                             '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
                             '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
                             '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        breathe: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+                            '50%': { transform: 'scale(1.5)', opacity: '0.4' },
                         }
                     }
                 }
@@ -36,6 +41,9 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
+        /* Chat Scrollbar */
+        .chat-container::-webkit-scrollbar { width: 4px; }
+        .chat-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-[#f0f4f8] text-slate-600 font-sans min-h-screen relative overflow-x-hidden">
@@ -44,94 +52,162 @@
     <div class="fixed inset-0 w-full h-full pointer-events-none z-[-1] overflow-hidden">
         <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
         <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-slate-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
     </div>
 
-    <main class="max-w-5xl mx-auto px-6 py-10">
+    <main class="max-w-4xl mx-auto px-6 py-10">
         
         <!-- Header -->
-        <div class="text-center mb-12 animate__animated animate__fadeInDown">
-            <div class="inline-block p-3 bg-blue-100 text-blue-600 rounded-2xl mb-4 shadow-sm">
-                <span class="iconify w-8 h-8" data-icon="lucide:cloud-rain"></span>
+        <header class="text-center mb-10 animate__animated animate__fadeInDown">
+            <div class="inline-block p-3 bg-rose-100 text-rose-600 rounded-2xl mb-4 shadow-sm">
+                <span class="iconify w-8 h-8" data-icon="lucide:heart-handshake"></span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-3 tracking-tight">Having a rough day?</h1>
-            <p class="text-lg text-slate-500 max-w-2xl mx-auto">It's completely okay to feel down sometimes. Take a deep breath, we're here for you.</p>
+            <h1 class="text-4xl font-bold text-slate-800 mb-2 tracking-tight">I'm here for you</h1>
+            <p class="text-slate-500">Take a deep breath. You are safe.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- 1. Breathing Exercise -->
+            <div class="glass-card rounded-3xl p-8 text-center shadow-sm animate__animated animate__fadeInLeft">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center justify-center gap-2">
+                    <span class="iconify text-teal-500" data-icon="lucide:wind"></span>
+                    Breathe
+                </h2>
+                
+                <div class="relative w-48 h-48 mx-auto mb-6 flex items-center justify-center">
+                    <!-- Animated Circles -->
+                    <div class="absolute inset-0 bg-teal-400 rounded-full opacity-20 animate-breathe"></div>
+                    <div class="absolute inset-4 bg-teal-500 rounded-full opacity-20 animate-breathe" style="animation-delay: 0.5s"></div>
+                    <div class="absolute inset-8 bg-teal-600 rounded-full opacity-20 animate-breathe" style="animation-delay: 1s"></div>
+                    
+                    <!-- Text -->
+                    <div class="relative z-10 text-teal-700 font-medium text-lg" id="breatheText">Inhale</div>
+                </div>
+                
+                <p class="text-sm text-slate-500">Follow the circle. Inhale as it expands, exhale as it shrinks.</p>
+            </div>
+
+            <!-- 2. Audio Player -->
+            <div class="glass-card rounded-3xl p-8 shadow-sm animate__animated animate__fadeInRight">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center justify-center gap-2">
+                    <span class="iconify text-indigo-500" data-icon="lucide:music"></span>
+                    Calming Sounds
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-white/50 p-4 rounded-xl flex items-center gap-4">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                            <span class="iconify" data-icon="lucide:cloud-rain"></span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-slate-700">Rain Sounds</h3>
+                            <audio controls class="w-full h-8 mt-2 opacity-80">
+                                <source src="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg" type="audio/ogg">
+                            </audio>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/50 p-4 rounded-xl flex items-center gap-4">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                            <span class="iconify" data-icon="lucide:trees"></span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-slate-700">Forest Ambience</h3>
+                            <audio controls class="w-full h-8 mt-2 opacity-80">
+                                <source src="https://actions.google.com/sounds/v1/nature/forest_morning.ogg" type="audio/ogg">
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. AI Chatbot (Mockup) -->
+            <div class="glass-card rounded-3xl p-6 shadow-sm md:col-span-2 animate__animated animate__fadeInUp">
+                <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="iconify text-rose-500" data-icon="lucide:message-circle-heart"></span>
+                    Vent it out
+                </h2>
+                
+                <div class="bg-white/50 rounded-2xl p-4 h-64 overflow-y-auto mb-4 chat-container flex flex-col gap-3" id="chatBox">
+                    <!-- Messages will appear here -->
+                    <div class="self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] text-sm text-slate-600">
+                        Hi there. I'm here to listen. What's on your mind?
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" class="flex-1 p-3 bg-white/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300" placeholder="Type here...">
+                    <button onclick="sendMessage()" class="p-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 transition-colors shadow-lg shadow-rose-200">
+                        <span class="iconify" data-icon="lucide:send"></span>
+                    </button>
+                </div>
+            </div>
+
         </div>
-        
-        <!-- Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            
-            <!-- Meditation Card -->
-            <div class="glass-card rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="p-3 bg-teal-100 text-teal-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="iconify w-6 h-6" data-icon="lucide:flower-2"></span>
-                    </div>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800 mb-2">Meditation Guide</h2>
-                <p class="text-slate-500 mb-6 text-sm leading-relaxed">Feeling overwhelmed? This article might help you understand and handle your bad day so you can rest better.</p>
-                <a href="https://www.alodokter.com/sering-sakit-dan-stres-coba-meditasi" target="_blank" class="inline-flex items-center gap-2 text-teal-600 font-semibold hover:text-teal-700 transition-colors">
-                    Read Article <span class="iconify" data-icon="lucide:arrow-right"></span>
-                </a>
-            </div>
-            
-            <!-- Breathing Card -->
-            <div class="glass-card rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="p-3 bg-sky-100 text-sky-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="iconify w-6 h-6" data-icon="lucide:wind"></span>
-                    </div>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800 mb-2">Breath Control</h2>
-                <p class="text-slate-500 mb-6 text-sm leading-relaxed">Pausing for a moment to regulate your breath can calm your mind. Try watching this video guide.</p>
-                <a href="https://youtu.be/MDqsn2oiYig?si=Ub6k2XjKxMavbSyM" target="_blank" class="inline-flex items-center gap-2 text-sky-600 font-semibold hover:text-sky-700 transition-colors">
-                    Watch Video <span class="iconify" data-icon="lucide:play-circle"></span>
-                </a>
-            </div>
-            
-            <!-- Music Card -->
-            <div class="glass-card rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="p-3 bg-violet-100 text-violet-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="iconify w-6 h-6" data-icon="lucide:music"></span>
-                    </div>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800 mb-2">Relaxing Music</h2>
-                <p class="text-slate-500 mb-6 text-sm leading-relaxed">Listening to calm music can soothe your bad day. Let these tunes relax your tired soul.</p>
-                <a href="https://youtu.be/bP9gMpl1gyQ?si=oJkMnqXNN_BEi3RY" target="_blank" class="inline-flex items-center gap-2 text-violet-600 font-semibold hover:text-violet-700 transition-colors">
-                    Listen Now <span class="iconify" data-icon="lucide:headphones"></span>
-                </a>
-            </div>
-            
-            <!-- Drawing Card -->
-            <div class="glass-card rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="p-3 bg-rose-100 text-rose-600 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="iconify w-6 h-6" data-icon="lucide:palette"></span>
-                    </div>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800 mb-2">Expressive Art</h2>
-                <p class="text-slate-500 mb-6 text-sm leading-relaxed">Try drawing, but not with your hands... try using your nose! See what masterpiece your emotions can create.</p>
-                <a href="gambar.html" class="inline-flex items-center gap-2 text-rose-600 font-semibold hover:text-rose-700 transition-colors">
-                    Start Drawing <span class="iconify" data-icon="lucide:brush"></span>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Navigation -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.5s">
-            <button onclick="window.location.href='pixelThoughts.html'" class="w-full sm:w-auto px-8 py-3 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm flex items-center justify-center gap-2">
-                <span class="iconify" data-icon="lucide:stars"></span>
-                Go to Pixel Thoughts
+
+        <!-- Footer -->
+        <footer class="text-center mt-10 animate__animated animate__fadeInUp">
+            <button onclick="window.location.href='index.html'" class="text-slate-400 hover:text-slate-600 transition-colors flex items-center justify-center gap-2 mx-auto text-sm font-medium group">
+                <span class="iconify group-hover:-translate-x-1 transition-transform" data-icon="lucide:arrow-left"></span>
+                Back to Home
             </button>
-            <button onclick="window.location.href='index.html'" class="w-full sm:w-auto px-8 py-3 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
-                <span class="iconify" data-icon="lucide:home"></span>
-                Back Home
-            </button>
-        </div>
+        </footer>
     </main>
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="badMood.js"></script>
+
+    <script>
+        // Breathing Text Logic
+        setInterval(() => {
+            const text = document.getElementById('breatheText');
+            if(text.textContent === 'Inhale') {
+                setTimeout(() => text.textContent = 'Hold', 3500);
+            } else if (text.textContent === 'Hold') {
+                setTimeout(() => text.textContent = 'Exhale', 1000);
+            } else {
+                setTimeout(() => text.textContent = 'Inhale', 3500);
+            }
+        }, 8000); // Sync with CSS animation
+
+        // Chat Logic
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+
+        chatInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if(!text) return;
+
+            // User Message
+            addMessage(text, 'user');
+            chatInput.value = '';
+
+            // Bot Response (Simple Logic)
+            setTimeout(() => {
+                const responses = [
+                    "I hear you. That sounds really tough.",
+                    "It's okay to feel this way. Your feelings are valid.",
+                    "Take your time. I'm listening.",
+                    "You're stronger than you think, but it's okay to rest.",
+                    "Sending you a virtual hug. 🫂",
+                    "Have you tried taking a deep breath?"
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+            }, 1000);
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = sender === 'user' 
+                ? 'self-end bg-rose-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-sm'
+                : 'self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] text-sm text-slate-600';
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
 </body>
 </html>
