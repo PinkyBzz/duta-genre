@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome - Emosi Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 20px 0;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 480px) {
+            .container {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+            }
+            input[type="text"] {
+                width: 100%;
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            button {
+                width: 100%;
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="roda emosi.jpg" alt="Roda Emosi" />
+        <input type="text" id="emotionInput" placeholder="Masukkan emosi yang Anda rasakan" />
+        <br />
+        <button id="continueBtn">Lanjut ke index.html</button>
+    </div>
+    <script>
+        const continueBtn = document.getElementById('continueBtn');
+        const emotionInput = document.getElementById('emotionInput');
+
+        continueBtn.addEventListener('click', () => {
+            const emotion = emotionInput.value.trim();
+            if (!emotion) {
+                alert('Silakan masukkan emosi yang Anda rasakan sebelum melanjutkan.');
+                return;
+            }
+            // Optionally, you could store the emotion in localStorage or pass it via query params
+            // For now, just navigate to index.html
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

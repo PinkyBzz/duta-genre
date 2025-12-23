@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Thoughts</title>
+    <link rel="stylesheet" href="pixelThoughts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="main-title">Pixel Thoughts</h1>
+            <p class="subtitle">Release your thoughts into the digital universe</p>
+        </header>
+        
+        <div class="audio-container">
+            <button class="audio-button" id="toggleAudio">
+                <i class="fas fa-play" id="audioIcon"></i>
+            </button>
+            <span class="audio-label">Background Music</span>
+            <audio id="backgroundAudio">
+                <source src="Crying Alone - Sad & Emotional Piano Song Instrumental.mp3" type="audio/mp3">
+            </audio>
+        </div>
+        
+        <main class="content">
+            <div class="input-section">
+                <textarea class="thought-input" id="thoughtInput" placeholder="Tulis pikiran atau perasaanmu di sini..."></textarea>
+            </div>
+            
+            <div class="button-container">
+                <button class="button" id="submitThoughts">Release Thoughts</button>
+                <button class="button" id="startTimer">Start Timer</button>
+                <button class="button" id="resetTimer">Reset Timer</button>
+            </div>
+            
+            <div class="timer-container">
+                <div class="timer" id="timer">00:00</div>
+            </div>
+            
+            <div class="response-section">
+                <div id="thoughtsDisplay" class="thoughts-display"></div>
+                <div class="calming-response" id="calmingResponse">
+                    <!-- Affirmation messages will appear here -->
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <button class="nav-button" onclick="window.location.href='index.html'">Go Back to Home</button>
+        </footer>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="pixelthoughts.js"></script>
+</body>
+</html>

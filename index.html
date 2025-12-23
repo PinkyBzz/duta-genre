@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DutGen - How Was Your Day?</title>
+    <link rel="stylesheet" href="dutgen.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+    <main class="container">
+        <!-- Header -->
+        <header class="header box animate__animated animate__fadeInDown">            <div class="bg-change">
+                <label for="bgColorPicker">Ubah Warna Background:</label>
+                <input type="color" id="bgColorPicker" value="#5722ca" />
+            </div>
+            <h1>How Was Your Day?</h1>
+        </header>
+        
+        <!-- Bagian Emoji & Mood -->
+        <section class="box mood-section">
+            <h2 class="box-title">Pilih Emoji Untuk Harimu</h2>
+            <img src="roda emosi.jpg" alt="Roda Emosi" class="roda-emosi-image" />
+            <div class="emoji-options">
+                <span class="emoji" data-emotion="Good" data-color="good">🙂</span>
+                <span class="emoji" data-emotion="Neutral" data-color="neutral">😐</span>
+                <span class="emoji" data-emotion="Bad" data-color="bad">😢</span>
+                <span class="emoji" data-emotion="Disappointed" data-color="bad">😞</span>
+                <span class="emoji" data-emotion="Sad" data-color="bad">😔</span>
+                <span class="emoji" data-emotion="Worried" data-color="bad">😟</span>
+                <span class="emoji" data-emotion="Confused" data-color="neutral">😕</span>
+                <span class="emoji" data-emotion="Angry" data-color="bad">😡</span>
+            </div>
+            <div class="result" id="result"></div>
+        </section>
+        
+        <!-- Bagian Input -->
+        <section class="box journal-section">
+            <h2 class="box-title">Catat Harimu</h2>
+            <div class="calendar-input">
+                <label for="calendar">Tanggal:</label>
+                <input type="date" id="calendar" />
+            </div>
+            <div class="calendar-input">
+                <span>Warna hari:</span>
+                <div class="color-options">
+                    <span class="color-picker green" id="green" data-color="good">🙂</span>
+                    <span class="color-picker yellow" id="yellow" data-color="neutral">😐</span>
+                    <span class="color-picker red" id="red" data-color="bad">😢</span>
+                </div>
+            </div>
+            <textarea class="text-area" id="userText" placeholder="Ceritakan harimu di sini..."></textarea>
+        </section>
+        
+        <div class="divider"></div>
+        
+        <!-- Bagian Timer -->
+        <section class="box reminder-section">
+            <h2 class="box-title">Set Pengingat</h2>
+            <div class="time-input">
+                <input type="time" id="notifyTime" />
+                <button id="setTime" class="btn">Set Notification</button>
+            </div>
+        </section>        <!-- Roda Emosi -->
+        <section class="box wheel-section">
+            <h2 class="box-title">Roda Emosi Interaktif</h2>
+            <div class="emotion-wheel-section">
+                <div class="wheel-container">
+                    <!-- Arrow indicator for selected emotion -->
+                    <div class="wheel-arrow"></div>
+                    <svg id="emotionWheel" width="280" height="280" viewBox="0 0 320 320"></svg>
+                </div>
+                <button id="spinWheel" class="btn">Putar Roda</button>
+                <div id="selectedEmotion"></div>
+            </div>
+        </section>
+        
+        <!-- Bagian Lepaskan Pikiran -->
+        <section class="box full-width thought-section">
+            <h2 class="box-title">Lepaskan Pikiranmu</h2>
+            <input type="text" class="thought-input" placeholder="Tulis pikiran yang ingin kamu lepaskan...">
+            <p>Tekan Enter untuk melepaskan pikiranmu ke langit...</p>
+        </section>
+    </main>
+    
+    <!-- Kontainer notifikasi -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- Canvas untuk animasi bintang -->
+    <canvas id="starCanvas" class="star-canvas"></canvas>
+      <script>
+        /**
+         * DutGen - Main Index Page Script
+         * Script untuk mengelola interaksi di halaman utama
+         * @version 1.2.0
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            /**
+             * IndexPage namespace for page-specific functionality
+             */
+            const IndexPage = {
+                // Configuration
+                config: {
+                    wheelAnimationDuration: 2000,   // Duration for wheel animation
+                    rotationCircles: 3,             // Number of full rotations for wheel spin
+                    notificationDuration: 3000,     // Default notification duration
+                },
+                
+                // Elements
+                elements: {},
+                
+                // State
+                state: {
+                    currentRotation: 0,
+                },
+                
+                // Data
+                data: {
+                    // Definisi emosi untuk roda emosi
+                    emotions: [
+                        { label: 'Senang', color: '#FFD700', emoji: '😊' },
+                        { label: 'Sedih', color: '#87CEEB', emoji: '😢' },
+                        { label: 'Marah', color: '#FF6347', emoji: '😡' },
+                        { label: 'Takut', color: '#8A2BE2', emoji: '😨' },
+                        { label: 'Terkejut', color: '#FFB347', emoji: '😲' },
+                        { label: 'Tenang', color: '#90EE90', emoji: '😌' },
+                        { label: 'Cemas', color: '#FFA07A', emoji: '😟' },
+                        { label: 'Bingung', color: '#B0C4DE', emoji: '😕' }
+                    ],
+                    
+                    // Emosi sedih untuk redirect
+                    sadEmotions: ["Bad", "Disappointed", "Sad", "Worried", "Angry"]
+                },
+                
+                /**
+                 * Initialize the page
+                 */
+                init() {
+                    this.cacheElements();
+                    this.setupBoxAnimations();
+                    this.setupEmojiListeners();
+                    this.setupReminderListeners();
+                    this.setupColorPickerListeners();
+                    this.setupEmotionWheel();
+                },
+                
+                /**
+                 * Cache DOM elements
+                 */                cacheElements() {
+                    this.elements = {
+                        emojis: document.querySelectorAll('.emoji'),
+                        result: document.getElementById('result'),
+                        setTimeButton: document.getElementById('setTime'),
+                        notifyTimeInput: document.getElementById('notifyTime'),
+                        calendarInput: document.getElementById('calendar'),
+                        colorPickers: document.querySelectorAll('.color-picker'),
+                        userText: document.getElementById('userText'),
+                        boxes: document.querySelectorAll('.box'),
+                        wheel: document.getElementById('emotionWheel'),
+                        spinBtn: document.getElementById('spinWheel'),
+                        selectedDiv: document.getElementById('selectedEmotion'),
+                        arrow: document.querySelector('.wheel-arrow'),
+                    };
+                },
+                
+                /**
+                 * Set up box animations
+                 */
+                setupBoxAnimations() {
+                    this.elements.boxes.forEach((box, index) => {
+                        box.style.setProperty('--order', index);
+                    });
+                },
+                
+                /**
+                 * Set up emoji event listeners
+                 */
+                setupEmojiListeners() {
+                    this.elements.emojis.forEach(emoji => {
+                        emoji.addEventListener('click', () => {
+                            const emotion = emoji.getAttribute('data-emotion');
+                            const colorClass = emoji.getAttribute('data-color');
+                            
+                            // Tampilkan hasil pilihan emosi
+                            this.elements.result.innerHTML = `You feel: <span class="${colorClass}">${emotion}</span>`;
+                            
+                            // Alihkan ke halaman bad mood jika emosi sedih
+                            if (this.data.sadEmotions.includes(emotion)) {
+                                this.showNotification(`Redirecting to support page for ${emotion} mood...`, 2000);
+                                
+                                setTimeout(() => {
+                                    window.location.href = "badMood.html";
+                                }, 2000);
+                                return;
+                            }
+                            
+                            // Tampilkan notifikasi
+                            this.showNotification("Thank you for sharing your mood!");
+                        });
+                    });
+                },
+                
+                /**
+                 * Set up reminder event listeners
+                 */
+                setupReminderListeners() {
+                    if (this.elements.setTimeButton) {
+                        this.elements.setTimeButton.addEventListener('click', () => {
+                            const timeValue = this.elements.notifyTimeInput.value;
+                            if (!timeValue) {
+                                this.showNotification('Please select a valid time!', null, 'warning');
+                                return;
+                            }
+                            
+                            const now = new Date();
+                            const [hours, minutes] = timeValue.split(':').map(Number);
+                            const targetTime = new Date();
+                            targetTime.setHours(hours, minutes, 0, 0);
+                            
+                            const delay = targetTime.getTime() - now.getTime();
+                            
+                            if (delay < 0) {
+                                this.showNotification('Please choose a future time.', null, 'warning');
+                                return;
+                            }
+                            
+                            // Set timer untuk notifikasi
+                            setTimeout(() => {
+                                this.showNotification("It's time for your scheduled reminder!");
+                            }, delay);
+                            
+                            this.showNotification(`Notification scheduled for ${timeValue}`, null, 'success');
+                        });
+                    }
+                },
+                
+                /**
+                 * Set up color picker event listeners
+                 */
+                setupColorPickerListeners() {
+                    this.elements.colorPickers.forEach(picker => {
+                        picker.addEventListener('click', () => {
+                            const selectedColor = picker.getAttribute('data-color');
+                            const selectedDate = this.elements.calendarInput.value;
+                            
+                            if (!selectedDate) {
+                                this.showNotification("Please select a date first.", null, 'warning');
+                                return;
+                            }
+                            
+                            // Tampilkan hasil pilihan warna untuk tanggal
+                            const formattedDate = this.formatDate(selectedDate);
+                            this.elements.result.innerHTML = `For ${formattedDate}, your day was: <span class="${selectedColor}">${selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)}</span>`;
+                            this.showNotification(`You marked ${formattedDate} as ${selectedColor}`, null, 'success');
+                        });
+                    });
+                },
+                  /**
+                 * Set up emotion wheel
+                 */
+                setupEmotionWheel() {
+                    if (!this.elements.wheel) return;
+                    
+                    // Reset wheel position
+                    this.elements.wheel.style.transform = 'rotate(0deg)';
+                    
+                    // Cache the arrow element
+                    this.elements.arrow = document.querySelector('.wheel-arrow');
+                    
+                    // Draw the wheel
+                    this.drawWheel();
+                    
+                    // Set up spin button
+                    if (this.elements.spinBtn) {
+                        this.elements.spinBtn.addEventListener('click', () => this.spinWheel());
+                    }
+                },
+                
+                /**
+                 * Draw the emotion wheel
+                 */                drawWheel() {
+                    const cx = 160, cy = 160, r = 140;
+                    const n = this.data.emotions.length;
+                    const angle = 2 * Math.PI / n;
+                    this.elements.wheel.innerHTML = '';
+                    
+                    // Create a group for the wheel to contain all elements
+                    const wheelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    this.elements.wheel.appendChild(wheelGroup);
+                    
+                    // Buat bagian roda untuk setiap emosi
+                    for (let i = 0; i < n; i++) {
+                        const startAngle = i * angle - Math.PI/2;
+                        const endAngle = (i+1) * angle - Math.PI/2;
+                        const x1 = cx + r * Math.cos(startAngle);
+                        const y1 = cy + r * Math.sin(startAngle);
+                        const x2 = cx + r * Math.cos(endAngle);
+                        const y2 = cy + r * Math.sin(endAngle);
+                        
+                        const pathData = [
+                            `M ${cx} ${cy}`,
+                            `L ${x1} ${y1}`,
+                            `A ${r} ${r} 0 0 1 ${x2} ${y2}`,
+                            'Z'
+                        ].join(' ');
+                        
+                        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+                        path.setAttribute('d', pathData);
+                        path.setAttribute('fill', this.data.emotions[i].color);
+                        path.setAttribute('data-idx', i);
+                        path.style.opacity = 0.95;
+                        path.addEventListener('click', () => this.selectEmotion(i));
+                        path.style.filter = 'drop-shadow(0 3px 5px rgba(0,0,0,0.2))';
+                        
+                        // Add hover effects
+                        path.addEventListener('mouseenter', () => {
+                            path.style.opacity = '1';
+                            path.style.filter = 'drop-shadow(0 5px 10px rgba(0,0,0,0.3))';
+                            path.style.transform = 'scale(1.02)';
+                        });
+                        
+                        path.addEventListener('mouseleave', () => {
+                            path.style.opacity = '0.95';
+                            path.style.filter = 'drop-shadow(0 3px 5px rgba(0,0,0,0.2))';
+                            path.style.transform = 'scale(1)';
+                        });
+                        
+                        wheelGroup.appendChild(path);
+                        
+                        // Tambahkan emoji di dalam bagian roda
+                        const labelAngle = startAngle + angle/2;
+                        const lx = cx + (r-50) * Math.cos(labelAngle);
+                        const ly = cy + (r-50) * Math.sin(labelAngle) + 8;
+                        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+                        text.setAttribute('x', lx);
+                        text.setAttribute('y', ly);
+                        text.setAttribute('text-anchor', 'middle');
+                        text.setAttribute('font-size', '26');
+                        text.setAttribute('pointer-events', 'none');
+                        text.textContent = this.data.emotions[i].emoji;
+                        wheelGroup.appendChild(text);
+                    }
+                    
+                    // Tambahkan lingkaran di tengah untuk estetika
+                    const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    centerCircle.setAttribute('cx', cx);
+                    centerCircle.setAttribute('cy', cy);
+                    centerCircle.setAttribute('r', 25);
+                    centerCircle.setAttribute('fill', '#fff');
+                    centerCircle.setAttribute('stroke', '#ddd');
+                    centerCircle.setAttribute('stroke-width', '2');
+                    wheelGroup.appendChild(centerCircle);
+                },
+                  /**
+                 * Spin the wheel to a random emotion
+                 */
+                spinWheel() {
+                    const n = this.data.emotions.length;
+                    const randomIdx = Math.floor(Math.random() * n);
+                    const anglePer = 360 / n;
+                    const targetRotation = 360 * this.config.rotationCircles + (360 - randomIdx * anglePer - anglePer/2);
+                    
+                    // Get the arrow element
+                    const arrow = document.querySelector('.wheel-arrow');
+                    
+                    // Remove any existing highlight class
+                    arrow.classList.remove('wheel-arrow-highlight');
+                    
+                    // Start spinning
+                    this.elements.wheel.style.transition = `transform ${this.config.wheelAnimationDuration/1000}s cubic-bezier(.17,.67,.83,.67)`;
+                    this.elements.wheel.style.transform = `rotate(${targetRotation}deg)`;
+                    this.state.currentRotation = targetRotation;
+                    
+                    // Disable button during animation
+                    this.elements.spinBtn.disabled = true;
+                    setTimeout(() => {
+                        this.elements.spinBtn.disabled = false;
+                    }, this.config.wheelAnimationDuration);
+                    
+                    // Select the emotion and highlight the arrow after animation completes
+                    setTimeout(() => {
+                        this.elements.wheel.style.transition = '';
+                        this.elements.wheel.style.transform = `rotate(${(targetRotation%360)}deg)`;
+                        
+                        // Highlight the arrow
+                        const emotion = this.data.emotions[randomIdx];
+                        arrow.style.borderTopColor = emotion.color;
+                        arrow.classList.add('wheel-arrow-highlight');
+                        
+                        // Select the emotion
+                        this.selectEmotion(randomIdx);
+                    }, this.config.wheelAnimationDuration);
+                },
+                
+                /**
+                 * Select an emotion from the wheel
+                 * @param {number} idx - Index of the emotion
+                 */                selectEmotion(idx) {
+                    const emotion = this.data.emotions[idx];
+                    
+                    // Create the emotion display with colored background matching the emotion
+                    const bgColor = this.getLighterColor(emotion.color, 0.85);
+                    const textColor = this.getContrastColor(emotion.color);
+                    
+                    this.elements.selectedDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px; color: ${textColor}">
+                            <span style="font-size: 2rem;">${emotion.emoji}</span>
+                            <span><b>Emosi yang mungkin sedang kamu rasakan:</b> ${emotion.label}</span>
+                        </div>
+                    `;
+                    
+                    // Apply color directly related to the emotion without animation
+                    this.elements.selectedDiv.style.background = bgColor;
+                    this.elements.selectedDiv.style.boxShadow = `0 0 10px rgba(0, 0, 0, 0.1), inset 0 0 3px ${emotion.color}`;
+                    
+                    // Update the arrow color to match the selected emotion
+                    if (this.elements.arrow) {
+                        this.elements.arrow.style.borderTopColor = emotion.color;
+                    }
+                    
+                    this.showNotification(`Kamu memilih emosi: ${emotion.label}`);},
+                
+                /**
+                 * Get a lighter version of a color
+                 * @param {string} color - The original color (hex format)
+                 * @param {number} factor - The lightness factor (0-1)
+                 * @returns {string} - The lighter color in rgba format
+                 */
+                getLighterColor(color, factor = 0.7) {
+                    // Convert hex to rgb
+                    let r, g, b;
+                    if (color.startsWith('#')) {
+                        r = parseInt(color.slice(1, 3), 16);
+                        g = parseInt(color.slice(3, 5), 16);
+                        b = parseInt(color.slice(5, 7), 16);
+                    } else {
+                        // For non-hex colors, use a default light background
+                        return `rgba(245, 245, 245, 0.9)`;
+                    }
+                    
+                    // Mix with white based on factor (higher factor = more white)
+                    r = Math.round(r + (255 - r) * factor);
+                    g = Math.round(g + (255 - g) * factor);
+                    b = Math.round(b + (255 - b) * factor);
+                    
+                    return `rgba(${r}, ${g}, ${b}, 0.85)`;
+                },
+                
+                /**
+                 * Get appropriate contrast text color based on background
+                 * @param {string} bgColor - Background color (hex format)
+                 * @returns {string} - Black or white depending on which has better contrast
+                 */
+                getContrastColor(bgColor) {
+                    // Convert hex to rgb
+                    let r, g, b;
+                    if (bgColor.startsWith('#')) {
+                        r = parseInt(bgColor.slice(1, 3), 16);
+                        g = parseInt(bgColor.slice(3, 5), 16);
+                        b = parseInt(bgColor.slice(5, 7), 16);
+                    } else {
+                        // Default to dark text
+                        return '#333333';
+                    }
+                    
+                    // Calculate perceived brightness
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                    
+                    // Return black for bright backgrounds, white for dark ones
+                    return brightness > 125 ? '#333333' : '#ffffff';
+                },
+                
+                /**
+                 * Show a notification
+                 * @param {string} message - Message to display
+                 * @param {number} duration - Duration in ms (null for default)
+                 * @param {string} type - Type of notification ('info', 'success', 'warning')
+                 */
+                showNotification(message, duration = null, type = 'info') {
+                    const notification = document.createElement('div');
+                    notification.className = 'notification';
+                    notification.classList.add(type);
+                    notification.textContent = message;
+                    
+                    // Remove any existing notifications
+                    document.querySelectorAll('.notification').forEach(n => n.remove());
+                    
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.classList.add('show');
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 300);
+                    }, duration || this.config.notificationDuration);
+                },
+                
+                /**
+                 * Format a date string
+                 * @param {string} dateString - Date string in YYYY-MM-DD format
+                 * @returns {string} Formatted date
+                 */
+                formatDate(dateString) {
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    return new Date(dateString).toLocaleDateString(undefined, options);
+                }
+            };
+            
+            // Initialize the page
+            IndexPage.init();
+        });    </script>
+    
+    <!-- Impor file JavaScript utama untuk animasi dan shared functionality -->
+    <script src="dutgen.js"></script>
+</body>
+</html>
