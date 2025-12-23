@@ -3,20 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Thoughts - Release</title>
+    <title>Stardust - Release</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            background: #090a0f; /* Fallback */
             color: #fff;
             font-family: 'Inter', sans-serif;
             height: 100vh;
             width: 100vw;
+        }
+
+        /* Nebula Background Layer */
+        #nebula-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(76, 29, 149, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            filter: blur(40px);
+            animation: nebulaPulse 20s infinite alternate;
+        }
+
+        @keyframes nebulaPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
         }
         
         /* Generated Stars Container */
@@ -98,19 +119,20 @@
             width: 240px;
             height: 160px;
             color: #1a1a1a;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             text-align: center;
             resize: none;
             outline: none;
             font-weight: 600;
             z-index: 20;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Playfair Display', serif;
             /* Removed text-shadow for cleaner look */
         }
         
         textarea::placeholder {
             color: rgba(50,50,50,0.6);
             font-weight: 400;
+            font-style: italic;
         }
 
         /* Guidance Text */
@@ -120,14 +142,16 @@
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 1.8rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            color: rgba(255,255,255,0.9);
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: rgba(255,255,255,0.95);
             text-shadow: 0 0 20px rgba(255,255,255,0.5);
             pointer-events: none;
             opacity: 0;
             transition: opacity 2s ease;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
         }
 
         /* Controls */
@@ -249,6 +273,7 @@
 </head>
 <body>
 
+    <div id="nebula-bg"></div>
     <div id="stars-container"></div>
 
     <!-- Central Star -->
