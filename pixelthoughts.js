@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioBtn = document.getElementById('toggle-audio');
     const audioIcon = document.getElementById('audio-icon');
     const starsContainer = document.getElementById('stars-container');
+    const restartContainer = document.getElementById('restart-container');
+    const restartBtn = document.getElementById('restart-btn');
 
     let isProcessing = false;
 
@@ -120,12 +122,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Finish
         setTimeout(() => {
-            showGuidance("You are free.");
-            setTimeout(() => {
-                location.reload(); // Reset for new thought
-            }, 4000);
+            showGuidance(""); // Clear guidance
+            restartContainer.classList.add('visible');
         }, 62000);
     }
+
+    // Restart Logic
+    restartBtn.addEventListener('click', () => {
+        // Hide Restart UI
+        restartContainer.classList.remove('visible');
+        guidance.textContent = '';
+        
+        // Reset Star Position/Scale
+        // Temporarily disable transition for instant reset
+        starContainer.style.transition = 'none';
+        starContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+        starContainer.style.opacity = '1';
+        
+        // Force reflow to apply the change immediately
+        void starContainer.offsetWidth;
+        
+        // Re-enable transition for next time
+        starContainer.style.transition = 'transform 60s linear, opacity 60s linear';
+        
+        // Reset Input
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        
+        isProcessing = false;
+    });
 
     function showGuidance(text) {
         guidance.style.opacity = '0';

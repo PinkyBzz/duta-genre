@@ -203,6 +203,48 @@
             box-shadow: 0 10px 25px rgba(255,255,255,0.4);
         }
 
+        /* Restart UI */
+        #restart-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        #restart-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #restart-container p {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        #restart-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #restart-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
@@ -219,6 +261,12 @@
 
     <!-- Guidance Text -->
     <div id="guidance"></div>
+
+    <!-- Restart UI (Initially Hidden) -->
+    <div id="restart-container">
+        <p>Masih ada pikiran yang mengganggu?</p>
+        <button id="restart-btn">Ulang</button>
+    </div>
 
     <!-- Footer Controls -->
     <div class="controls">
