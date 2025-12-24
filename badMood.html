@@ -93,9 +93,21 @@
         #page-transition {
             transition: opacity 0.5s ease-in-out;
         }
+
+        /* Vanta Background */
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
     </style>
 </head>
-<body class="bg-[#f0f4f8] text-slate-600 font-sans min-h-screen relative overflow-x-hidden">
+<body class="text-slate-600 font-sans min-h-screen relative overflow-x-hidden">
+    <!-- Vanta Background -->
+    <div id="vanta-bg"></div>
 
     <!-- Page Transition Overlay -->
     <div id="page-transition" class="fixed inset-0 bg-white z-[100] pointer-events-none opacity-100"></div>
@@ -651,6 +663,29 @@
             }
             drawVisualizer();
         }
+
+        // Initialize Vanta Fog (Soft & Calm)
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                VANTA.FOG({
+                    el: "#vanta-bg",
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: false,
+                    minHeight: 200.00,
+                    minWidth: 200.00,
+                    highlightColor: 0xffc0cb, // Pinkish
+                    midtoneColor: 0xb0e0e6, // Powder Blue
+                    lowlightColor: 0xf0f8ff, // Alice Blue
+                    baseColor: 0xffffff, // White
+                    blurFactor: 0.6,
+                    speed: 1.5,
+                    zoom: 1.2
+                });
+            } catch (e) {
+                console.error("Vanta JS failed to load", e);
+            }
+        });
     </script>
 </body>
 </html>
